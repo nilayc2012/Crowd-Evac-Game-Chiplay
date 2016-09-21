@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 
+//For outer boundary of the scene
 class WorldBounds
 {
     public Vector3 topleft, topright, bottomleft, bottomright;
@@ -56,6 +57,8 @@ public class ElementGenerator : MonoBehaviour
         generatewalls();
         generateDoors();
         simulate();
+
+        //displaying the evacuation time
         Debug.Log(this.gameObject.GetComponent<TimerScript>().endTimer());
 
     }
@@ -65,6 +68,8 @@ public class ElementGenerator : MonoBehaviour
     void Update()
     {
         Debug.Log(this.GetComponent<TimerScript>().time);
+
+        //Deactivating the agents once they reach destination
         foreach (GameObject agent in GameObject.FindGameObjectsWithTag("agent"))
         {
             agent.GetComponent<NavMeshAgent>().SetDestination(GameObject.FindGameObjectWithTag("destinations").transform.position);
@@ -74,11 +79,13 @@ public class ElementGenerator : MonoBehaviour
             }
         }
 
+        //if all agent reach destination or the time expires, level ends
         if (GameObject.FindGameObjectsWithTag("agent").Length == 0 || this.gameObject.GetComponent<timer>().time == 2000)
         {
             end = true;
         }
 
+        //if level ends reloading the level
         if(end)
         {
             Debug.Log("Failed");
@@ -88,7 +95,7 @@ public class ElementGenerator : MonoBehaviour
     }
 
 
-    //place pillars
+    //generate pillars
 
     void generatePillars()
     {
@@ -103,7 +110,7 @@ public class ElementGenerator : MonoBehaviour
 
             float PillarWidth = UnityEngine.Random.Range(0.5f, PillarMaxWidth);
 
-
+            //randomly generating pillar coordinates and placing pillar. The loop continues until successfully pillar placed
             while (!placePillars(xcord, zcord, PillarWidth))
             {
                 xcord = wb.topleft.x + (wb.topright.x - wb.topleft.x) * UnityEngine.Random.Range(0.1f, 1.0f);
@@ -116,6 +123,7 @@ public class ElementGenerator : MonoBehaviour
         }
     }
 
+    //place pillars
     bool placePillars(float xcord, float zcord, float PillarWidth)
     {
         GameObject pillarObj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -124,10 +132,13 @@ public class ElementGenerator : MonoBehaviour
         pillarObj.transform.localScale = new Vector3(PillarWidth, pillarHeight, PillarWidth);
         pillarObj.transform.position = new Vector3(xcord, getWorldBounds().bottomleft.y, zcord);
 
+
+        //checking if pillar intersects any wall, if yes remove the pillar and return fail. Other wise return success
         GameObject[] walls = GameObject.FindGameObjectsWithTag("wall");
 
         foreach(GameObject wall in walls)
         {
+            //walls aligned with x axis
             if(wall.transform.rotation.y==0)
             {
                 if((pillarObj.transform.position.x+pillarObj.transform.localScale.x/2>=wall.transform.position.x-wall.transform.localScale.x/2)||(pillarObj.transform.position.x - pillarObj.transform.localScale.x / 2 <= wall.transform.position.x + wall.transform.localScale.x / 2))
@@ -141,6 +152,7 @@ public class ElementGenerator : MonoBehaviour
             }
             else
             {
+                //walls aligned iwth z axis
                 if ((pillarObj.transform.position.z + pillarObj.transform.localScale.x / 2 >= wall.transform.position.z - wall.transform.localScale.x / 2) || (pillarObj.transform.position.z - pillarObj.transform.localScale.x / 2 <= wall.transform.position.z + wall.transform.localScale.x / 2))
                 {
                     if (((pillarObj.transform.position.x + pillarObj.transform.localScale.x / 2 >= wall.transform.position.x - wall.transform.localScale.z / 2) && (pillarObj.transform.position.x - pillarObj.transform.localScale.x / 2 < wall.transform.position.x + wall.transform.localScale.z / 2)) || ((pillarObj.transform.position.x - pillarObj.transform.localScale.x / 2 <= wall.transform.position.x + wall.transform.localScale.z / 2)&& (pillarObj.transform.position.x + pillarObj.transform.localScale.x / 2 > wall.transform.position.x - wall.transform.localScale.z / 2)))
@@ -155,11 +167,17 @@ public class ElementGenerator : MonoBehaviour
         return true;
     }
 
+    //remove pillar
     void removePillar(GameObject pillar)
     {
         Destroy(pillar);
     }
-    // world bounds
+
+
+
+
+    // get world bound coordinates
+
 
     WorldBounds getWorldBounds()
     {
@@ -223,6 +241,8 @@ public class ElementGenerator : MonoBehaviour
         return wb;
     }
 
+
+    //generate walls
     void generatewalls()
     {
         GameObject[] walls = GameObject.FindGameObjectsWithTag("wall");
@@ -235,11 +255,8 @@ public class ElementGenerator : MonoBehaviour
 
         WorldBounds wb = getWorldBounds();
 
-
+        //placing two walls
         bool success = false;
-
-        // for (int i = 0; i < noOfWalls; i++)
-        /* {*/
 
         float xcord = wb.topleft.x + (wb.topright.x - wb.topleft.x) * UnityEngine.Random.Range(0.1f, 1.0f);
         float zcord = wb.bottomleft.z + (wb.topleft.z - wb.bottomleft.z) * UnityEngine.Random.Range(0.1f, 1.0f);
@@ -247,6 +264,8 @@ public class ElementGenerator : MonoBehaviour
         float xcord1 = wb.topleft.x + (wb.topright.x - wb.topleft.x) * UnityEngine.Random.Range(0.1f, 1.0f);
         float zcord1 = wb.bottomleft.z + (wb.topleft.z - wb.bottomleft.z) * UnityEngine.Random.Range(0.1f, 1.0f);
         success = false;
+
+        //try placing wall with random coordinates until valid wall placed
         while (!success)
         {
 
@@ -261,15 +280,17 @@ public class ElementGenerator : MonoBehaviour
         xcord1 = wb.topleft.x + (wb.topright.x - wb.topleft.x) * UnityEngine.Random.Range(0.1f, 1.0f);
         zcord1 = wb.bottomleft.z + (wb.topleft.z - wb.bottomleft.z) * UnityEngine.Random.Range(0.1f, 1.0f);
 
+        //try placing wall with random coordinates until valid wall placed
         while (!success)
         {
 
 
             success = placeWall(xcord, zcord, xcord, zcord1);
-            //}
+         
         }
     }
 
+    //place wall
     bool placeWall(float x0, float y0,float x1,float y1)
     {
         Debug.Log(x0 + " " + y0 + " " + x1 + " " + y1);
@@ -287,6 +308,7 @@ public class ElementGenerator : MonoBehaviour
         newwall.transform.eulerAngles = new Vector3(0, Mathf.Atan(Mathf.Abs(y0 - y1) / Mathf.Abs(x0 - x1)) * (180 / Mathf.PI), 0);
         
         GameObject[] pillars = GameObject.FindGameObjectsWithTag("pillar");
+        
         //pillar intersection check
         foreach (GameObject pillar in pillars)
         {
@@ -353,6 +375,7 @@ public class ElementGenerator : MonoBehaviour
         Destroy(obj);
     }
 
+    //generating doors
     void generateDoors()
     {
         GameObject door = null;
@@ -384,6 +407,7 @@ public class ElementGenerator : MonoBehaviour
         }
     }
 
+    //placing doors
     bool placeDoors(int index, GameObject[] walls, GameObject door)
     {
         Debug.Log("Chosen wall " + walls[index].name);
@@ -504,14 +528,19 @@ public class ElementGenerator : MonoBehaviour
         return true;
     }
 
+    //get all doors
     List<GameObject> getDoors()
     {
         return new List<GameObject>(GameObject.FindGameObjectsWithTag("wall"));
     }
+
+    //get all pillars
     List<GameObject> getPillars()
     {
         return new List<GameObject>(GameObject.FindGameObjectsWithTag("pillar"));
     }
+
+    //get all user placed walls
     List<GameObject> getEditableWalls()
     {
         GameObject[] walls = GameObject.FindGameObjectsWithTag("wall");
@@ -526,11 +555,14 @@ public class ElementGenerator : MonoBehaviour
         }
         return newwalls;
     }
+
+    //get all walls
     List<GameObject> getWalls()
     {
         return new List<GameObject>(GameObject.FindGameObjectsWithTag("wall"));
     }
 
+    //simulation
     void simulate()
     {
         GameObject[] walls = GameObject.FindGameObjectsWithTag("wall");
@@ -547,6 +579,7 @@ public class ElementGenerator : MonoBehaviour
             }
         }
 
+        //spwaning all the agents
         foreach (GameObject wall in walls)
         {
                 if (wall.transform.rotation.y == 0)
@@ -582,6 +615,7 @@ public class ElementGenerator : MonoBehaviour
         agentProto.SetActive(false);
         int count = 0;
 
+        //activating the agents
         objects = Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[];
         foreach (GameObject g in objects)
         {
@@ -593,15 +627,11 @@ public class ElementGenerator : MonoBehaviour
         }
 
         
-        this.gameObject.GetComponent<TimerScript>().startTimer();
-
+        // setting destination location for all agents
         foreach (GameObject agent in GameObject.FindGameObjectsWithTag("agent"))
         {
             agent.GetComponent<NavMeshAgent>().SetDestination(GameObject.FindGameObjectWithTag("destinations").transform.position);
         }
-
-
-        Debug.Log(this.GetComponent<EndStatus>().end);
 
             
         
