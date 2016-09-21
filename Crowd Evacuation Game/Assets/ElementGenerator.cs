@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
 using System;
@@ -30,7 +31,7 @@ public class ElementGenerator : MonoBehaviour
     //Door details
     public int noOfDoors;
     public float WidthOfDoor;
-
+    bool end;
     void Awake()
     {
         //pillar details
@@ -40,7 +41,7 @@ public class ElementGenerator : MonoBehaviour
         noOfWalls = 2;
         noOfDoors = 6;
         WidthOfDoor = 1.0f;
-
+        end = false;
         //wall details
 
 
@@ -50,7 +51,7 @@ public class ElementGenerator : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        
         generatePillars();
         generatewalls();
         generateDoors();
@@ -63,9 +64,26 @@ public class ElementGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(this.GetComponent<EndStatus>().end)
+        Debug.Log(this.GetComponent<TimerScript>().time);
+        foreach (GameObject agent in GameObject.FindGameObjectsWithTag("agent"))
         {
+            agent.GetComponent<NavMeshAgent>().SetDestination(GameObject.FindGameObjectWithTag("destinations").transform.position);
+            if (Vector3.Distance(agent.transform.position, GameObject.FindGameObjectWithTag("destinations").transform.position) <= 1.0f)
+            {
+                agent.SetActive(false);
+            }
+        }
 
+        if (GameObject.FindGameObjectsWithTag("agent").Length == 0 || this.gameObject.GetComponent<timer>().time == 1200)
+        {
+            end = true;
+        }
+
+        if(end)
+        {
+            Debug.Log("Failed");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            
         }
     }
 
