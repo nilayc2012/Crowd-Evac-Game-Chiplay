@@ -74,7 +74,7 @@ public class ElementGenerator : MonoBehaviour
             }
         }
 
-        if (GameObject.FindGameObjectsWithTag("agent").Length == 0 || this.gameObject.GetComponent<timer>().time == 1200)
+        if (GameObject.FindGameObjectsWithTag("agent").Length == 0 || this.gameObject.GetComponent<timer>().time == 2000)
         {
             end = true;
         }
