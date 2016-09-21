@@ -267,7 +267,7 @@ public class ElementGenerator : MonoBehaviour
         newwall.transform.position = new Vector3(Mathf.Min(x0, x1)+Mathf.Abs(x0 - x1)/2,1.22f, Mathf.Min(y0, y1) + Mathf.Abs(y0-y1)/2);
 
         newwall.transform.eulerAngles = new Vector3(0, Mathf.Atan(Mathf.Abs(y0 - y1) / Mathf.Abs(x0 - x1)) * (180 / Mathf.PI), 0);
-        /*
+        
         GameObject[] pillars = GameObject.FindGameObjectsWithTag("pillar");
         //pillar intersection check
         foreach (GameObject pillar in pillars)
@@ -296,35 +296,34 @@ public class ElementGenerator : MonoBehaviour
             }
         }
 
-        //wall intersection check
-        GameObject[] walls = GameObject.FindGameObjectsWithTag("wall");
-
-        foreach(GameObject wall in walls)
+       /* //wall intersection check
+        GameObject[] walls1 = GameObject.FindGameObjectsWithTag("wall");
+        foreach (GameObject wall in walls1)
         {
-            if (wall!=newwall && newwall.transform.rotation.y == 0 && wall.transform.rotation.y!=0)
+            if (Doorobj.transform.rotation.y == 0 && wall.transform.rotation.y != 0)
             {
-                if ((wall.transform.position.x + wall.transform.localScale.x / 2 >= newwall.transform.position.x - newwall.transform.localScale.x / 2) || (wall.transform.position.x - wall.transform.localScale.x / 2 <= newwall.transform.position.x + newwall.transform.localScale.x / 2))
+                if ((wall.transform.position.x + wall.transform.localScale.x / 2 >= Doorobj.transform.position.x - Doorobj.transform.localScale.z / 2) || (wall.transform.position.x - wall.transform.localScale.x / 2 <= Doorobj.transform.position.x + Doorobj.transform.localScale.z / 2))
                 {
-                    if (((wall.transform.position.z + wall.transform.localScale.z / 2 >= newwall.transform.position.z - newwall.transform.localScale.z / 2) && (wall.transform.position.z - wall.transform.localScale.z / 2 < newwall.transform.position.z + newwall.transform.localScale.z / 2)) || ((wall.transform.position.z - wall.transform.localScale.z / 2 <= newwall.transform.position.z + newwall.transform.localScale.z / 2) && (wall.transform.position.z + wall.transform.localScale.z / 2 > newwall.transform.position.z - newwall.transform.localScale.z / 2)))
+                    if (((wall.transform.position.z + wall.transform.localScale.z / 2 >= Doorobj.transform.position.z - Doorobj.transform.localScale.x / 2) && (wall.transform.position.z - wall.transform.localScale.z / 2 < Doorobj.transform.position.z + Doorobj.transform.localScale.x / 2)) || ((wall.transform.position.z - wall.transform.localScale.z / 2 <= Doorobj.transform.position.z + Doorobj.transform.localScale.x / 2) && (wall.transform.position.z + wall.transform.localScale.z / 2 > Doorobj.transform.position.z - Doorobj.transform.localScale.x / 2)))
                     {
-                        removeWall(wall);
+                        removeWall(Doorobj);
                         return false;
                     }
                 }
             }
-            else
+            else if (Doorobj.transform.rotation.y != 0 && wall.transform.rotation.y == 0)
             {
-                if ((wall.transform.position.z + wall.transform.localScale.x / 2 >= newwall.transform.position.z - newwall.transform.localScale.x / 2) || (wall.transform.position.z - wall.transform.localScale.x / 2 <= newwall.transform.position.z + newwall.transform.localScale.x / 2))
+                if ((wall.transform.position.z + wall.transform.localScale.x / 2 >= Doorobj.transform.position.z - Doorobj.transform.localScale.z / 2) || (wall.transform.position.z - wall.transform.localScale.x / 2 <= Doorobj.transform.position.z + Doorobj.transform.localScale.z / 2))
                 {
-                    if (((wall.transform.position.x + wall.transform.localScale.z / 2 >= newwall.transform.position.x - newwall.transform.localScale.z / 2) && (wall.transform.position.x - wall.transform.localScale.z / 2 < newwall.transform.position.x + newwall.transform.localScale.z / 2)) || ((wall.transform.position.x - wall.transform.localScale.z / 2 <= newwall.transform.position.x + newwall.transform.localScale.z / 2) && (wall.transform.position.x + wall.transform.localScale.z / 2 > newwall.transform.position.x - newwall.transform.localScale.z / 2)))
+                    if (((wall.transform.position.x + wall.transform.localScale.z / 2 >= Doorobj.transform.position.x - Doorobj.transform.localScale.x / 2) && (wall.transform.position.x - wall.transform.localScale.z / 2 < Doorobj.transform.position.x + Doorobj.transform.localScale.x / 2)) || ((wall.transform.position.x - wall.transform.localScale.z / 2 <= Doorobj.transform.position.x + Doorobj.transform.localScale.x / 2) && (wall.transform.position.x + wall.transform.localScale.z / 2 > Doorobj.transform.position.x - Doorobj.transform.localScale.x / 2)))
                     {
-                        removeWall(wall);
+                        removeWall(Doorobj);
                         return false;
                     }
                 }
             }
-        }
-        */
+        }*/
+
         return true;
 
     }
@@ -370,7 +369,7 @@ public class ElementGenerator : MonoBehaviour
     bool placeDoors(int index, GameObject[] walls, GameObject door)
     {
         Debug.Log("Chosen wall " + walls[index].name);
-
+        GameObject Doorobj = null;
         //vertical
         if (walls[index].transform.rotation.y == 0)
         {
@@ -399,7 +398,7 @@ public class ElementGenerator : MonoBehaviour
                 obj.transform.rotation = walls[index].transform.rotation;
 
                 //place door
-                GameObject Doorobj = Instantiate(door);
+                Doorobj = Instantiate(door);
                 Doorobj.SetActive(true);
                 Doorobj.tag = "door";
                 Doorobj.transform.position = new Vector3(chosenX + WidthOfDoor / 2, walls[index].transform.position.y, walls[index].transform.position.z);
@@ -440,7 +439,7 @@ public class ElementGenerator : MonoBehaviour
                 obj.transform.rotation = walls[index].transform.rotation;
 
                 //place door
-                GameObject Doorobj = Instantiate(door);
+                Doorobj = Instantiate(door);
                 Doorobj.SetActive(true);
                 Doorobj.tag = "door";
                 Doorobj.transform.position = new Vector3(walls[index].transform.position.x, walls[index].transform.position.y, chosenZ - WidthOfDoor / 2);
@@ -453,6 +452,35 @@ public class ElementGenerator : MonoBehaviour
             {
                 return false;
             }
+            /*
+            //wall intersection check
+            GameObject[] walls1 = GameObject.FindGameObjectsWithTag("wall");
+            foreach(GameObject wall in walls1)
+            {
+    if (Doorobj.transform.rotation.y == 0 && wall.transform.rotation.y!=0)
+    {
+        if ((wall.transform.position.x + wall.transform.localScale.x / 2 >= Doorobj.transform.position.x - Doorobj.transform.localScale.z / 2) || (wall.transform.position.x - wall.transform.localScale.x / 2 <= Doorobj.transform.position.x + Doorobj.transform.localScale.z / 2))
+        {
+            if (((wall.transform.position.z + wall.transform.localScale.z / 2 >= Doorobj.transform.position.z - Doorobj.transform.localScale.x / 2) && (wall.transform.position.z - wall.transform.localScale.z / 2 < Doorobj.transform.position.z + Doorobj.transform.localScale.x / 2)) || ((wall.transform.position.z - wall.transform.localScale.z / 2 <= Doorobj.transform.position.z + Doorobj.transform.localScale.x / 2) && (wall.transform.position.z + wall.transform.localScale.z / 2 > Doorobj.transform.position.z - Doorobj.transform.localScale.x / 2)))
+            {
+                removeWall(Doorobj);
+                return false;
+            }
+        }
+    }
+    else if (Doorobj.transform.rotation.y != 0 && wall.transform.rotation.y == 0)
+    {
+        if ((wall.transform.position.z + wall.transform.localScale.x / 2 >= Doorobj.transform.position.z - Doorobj.transform.localScale.z / 2) || (wall.transform.position.z - wall.transform.localScale.x / 2 <= Doorobj.transform.position.z + Doorobj.transform.localScale.z / 2))
+        {
+            if (((wall.transform.position.x + wall.transform.localScale.z / 2 >= Doorobj.transform.position.x - Doorobj.transform.localScale.x / 2) && (wall.transform.position.x - wall.transform.localScale.z / 2 < Doorobj.transform.position.x + Doorobj.transform.localScale.x / 2)) || ((wall.transform.position.x - wall.transform.localScale.z / 2 <= Doorobj.transform.position.x + Doorobj.transform.localScale.x / 2) && (wall.transform.position.x + wall.transform.localScale.z / 2 > Doorobj.transform.position.x - Doorobj.transform.localScale.x / 2)))
+            {
+                removeWall(Doorobj);
+                return false;
+            }
+        }
+    }
+}*/
+
 
         }
         return true;
